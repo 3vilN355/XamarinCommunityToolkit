@@ -262,15 +262,16 @@ namespace Xamarin.CommunityToolkit.UI.Views
 
 				var outputSizes = map.GetOutputSizes(Class.FromType(typeof(SurfaceTexture))) ?? throw new NullReferenceException();
 
-				photoSize = GetMaxSize(map.GetOutputSizes((int)ImageFormatType.Jpeg));
-				videoSize = GetMaxSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder))));
-				previewSize = ChooseOptimalSize(
-					outputSizes,
-					rotatedViewWidth,
-					rotatedViewHeight,
-					maxPreviewWidth,
-					maxPreviewHeight,
-					cameraTemplate == CameraTemplate.Record ? videoSize : photoSize);
+				var optimalSize = ChooseOptimalSize(
+						map.GetOutputSizes(Class.FromType(typeof(SurfaceTexture))) ?? throw new NullReferenceException(),
+						rotatedViewWidth,
+						rotatedViewHeight,
+						maxPreviewWidth,
+						maxPreviewHeight,
+						cameraTemplate == CameraTemplate.Record ? GetMaxSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder)))) : GetMaxSize(map.GetOutputSizes((int)ImageFormatType.Jpeg)));
+				previewSize = optimalSize;
+				photoSize = optimalSize;
+				videoSize = optimalSize;
 				cameraType = (LensFacing)(int)(characteristics.Get(CameraCharacteristics.LensFacing) ?? throw new NullReferenceException());
 
 				if (Resources.Configuration?.Orientation == AOrientation.Landscape)
