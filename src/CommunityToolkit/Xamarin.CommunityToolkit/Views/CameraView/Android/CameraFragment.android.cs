@@ -84,7 +84,7 @@ namespace Xamarin.CommunityToolkit.UI.Views
 
 		TaskCompletionSource<CameraDevice?>? initTaskSource;
 		TaskCompletionSource<bool>? permissionsRequested;
-		private object deviceLock;
+		private object deviceLock = new object();
 
 		public CameraFragment()
 		{
