@@ -84,6 +84,7 @@ namespace Xamarin.CommunityToolkit.UI.Views
 
 		TaskCompletionSource<CameraDevice?>? initTaskSource;
 		TaskCompletionSource<bool>? permissionsRequested;
+		private object deviceLock;
 
 		public CameraFragment()
 		{
@@ -688,34 +689,37 @@ namespace Xamarin.CommunityToolkit.UI.Views
 
 		public void CloseDevice()
 		{
-			try
+			lock(deviceLock)
 			{
-				DisposeMediaRecorder();
-			}
-			catch (Java.Lang.Exception e)
-			{
-				LogError("Error close device", e);
-			}
-			CloseSession();
-			try
-			{
-				if (sessionBuilder != null)
+				try
 				{
-					sessionBuilder.Dispose();
-					sessionBuilder = null;
+					DisposeMediaRecorder();
 				}
-
-				if (device != null)
+				catch (Java.Lang.Exception e)
 				{
-					device.Close();
-					device = null;
+					LogError("Error close device", e);
 				}
+				CloseSession();
+				try
+				{
+					if (sessionBuilder != null)
+					{
+						sessionBuilder.Dispose();
+						sessionBuilder = null;
+					}
 
-				DisposeImageReader();
-			}
-			catch (Java.Lang.Exception e)
-			{
-				LogError("Error close device", e);
+					if (device != null)
+					{
+						device.Close();
+						device = null;
+					}
+
+					DisposeImageReader();
+				}
+				catch (Java.Lang.Exception e)
+				{
+					LogError("Error close device", e);
+				}
 			}
 		}
 
